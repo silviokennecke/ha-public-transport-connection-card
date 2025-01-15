@@ -5,6 +5,7 @@ on:
     branches:
       - '**'
     paths:
+      - '.github/workflows/build-js.yaml'
       - 'src/*.js'
       - 'src/**/*.js'
 
@@ -30,7 +31,7 @@ jobs:
 
     - name: Minify and merge JS files
       run: |
-        terser $(find components -name "*.js") --output dist/ha-public-transport-connection-card.js
+        terser $(find src -name "*.js") --output dist/ha-public-transport-connection-card.js
 
     - name: Commit and push changes
       run: |

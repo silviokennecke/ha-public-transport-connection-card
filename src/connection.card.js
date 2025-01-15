@@ -10,7 +10,20 @@ function timeToStr(time) {
 }
 
 function delayToMinutes(delay) {
-    return (Date.parse('1.1.1970 ' + delay) - Date.parse('1.1.1970')) / 60000 ?? (delay || 0);
+    // delay as number
+    if (typeof delay === 'number') {
+        return delay;
+    }
+
+    // delay as HH:MM:SS
+    if (typeof delay === 'string' && delay.includes(':')) {
+        const delayParts = delay.split(':');
+        const hours = parseInt(delayParts[0]) || 0;
+        const minutes = parseInt(delayParts[1]) || 0;
+        return (hours * 60) + minutes;
+    }
+
+    return parseInt(delay) || 0;
 }
 
 class PublicTransportConnectionCard extends LitElement {
