@@ -10,6 +10,17 @@ body:
       description: Which version of the plugin did you install
     validations:
       required: true
+  - type: dropdown
+    id: affected_card
+    attributes:
+      label: Affected Card Type
+      description: Which card type is affected by the issue?
+      options:
+        - public-transport-connections-card
+        - public-transport-connection-card
+        - public-transport-departures-card
+    validations:
+      required: true
   - type: input
     id: home_assistant_version
     attributes:

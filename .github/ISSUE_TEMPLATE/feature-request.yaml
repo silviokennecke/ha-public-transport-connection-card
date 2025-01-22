@@ -3,6 +3,17 @@ description: Request a new feature or enhancement
 title: "[Feature Request]: "
 labels: [ "enhancement" ]
 body:
+  - type: dropdown
+    id: affected_card
+    attributes:
+      label: Affected Card Type
+      description: Which card type is affected by your suggestion?
+      options:
+        - public-transport-connections-card
+        - public-transport-connection-card
+        - public-transport-departures-card
+    validations:
+      required: false
   - type: input
     id: home_assistant_version
     attributes:
