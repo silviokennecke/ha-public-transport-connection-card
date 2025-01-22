@@ -1,0 +1,17 @@
+{
+    "name": "ha-public-transport-connection-card",
+    "version": "3.0.0",
+    "description": "",
+    "main": "dist/ha-public-transport-connection-card.js",
+    "scripts": {
+        "build": "terser $(find src/common -name \"*.js\" | sort) $(find src/cards -name \"*.js\" | sort) --output dist/ha-public-transport-connection-card.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/silviokennecke/ha-public-transport-connection-card.git"
+    },
+    "private": true,
+    "devDependencies": {
+        "terser": "^5.37.0"
+    }
+}
