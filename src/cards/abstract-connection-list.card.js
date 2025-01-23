@@ -1,5 +1,4 @@
 import {
-    LitElement,
     html,
     css,
 } from "https://unpkg.com/lit-element@2.0.1/lit-element.js?module";
@@ -9,12 +8,7 @@ import {
  * @typedef {{description: string, departure: { time: string, delay: number, station: string }, arrival: { time: string, delay: number, station: string }}} ConnectionDetail
  */
 
-class AbstractConnectionListCard extends LitElement {
-    static AVAILABLE_THEMES = [
-        'deutsche-bahn',
-        'homeassistant',
-    ];
-
+class AbstractConnectionListCard extends AbstractCard {
     /**
      * @param {Object} hass
      * @param {Array<string>} unusedEntities
@@ -23,105 +17,81 @@ class AbstractConnectionListCard extends LitElement {
      */
     static getStubConfig(hass, unusedEntities, allEntities) {
         return {
-            title: '', // e.g. Next train
+            ...super.getStubConfig(hass, unusedEntities, allEntities),
             departure_station: '', // e.g. Home
             arrival_station: '', // e.g. Work
-            entity: entityId,
-            theme: 'deutsche-bahn',
-        };
-    }
-
-    static get properties() {
-        return {
-            hass: {},
-            config: {},
         };
     }
 
     /**
      * Gets all connections to be displayed
      * @abstract
-     * @param {string} entityId
-     * @param {Object} stateObj
+     * @param {HassStateObject} stateObj
      * @returns {Array<ConnectionDetail>}
      */
-    getConnections(entityId, stateObj) {
+    getConnections(stateObj) {
         return [];
     }
 
-    render() {
-        const title = this.config.title;
-        const entityId = this.config.entity;
-        const theme = this.config.theme;
-        const stateObj = this.hass.states[entityId];
-
-        if (!stateObj) {
-            return html`
-                <ha-card class="ptc-theme-${theme}">
-                    ${title ? html`<h1>${title}</h1>` : ''}
-                    <div class="not-found">Entity ${entityId} not found.</div>
-                </ha-card>
-            `;
-        }
+    /**
+     * @override
+     * @inheritDoc
+     */
+    renderInnerCard(entityState) {
+        const stateObj = entityState;
 
         const icon = this.config.icon || stateObj.attributes.icon || 'mdi:train';
 
-        const connections = this.getConnections(entityId, stateObj);
+        const connections = this.getConnections(entityState.entity_id, stateObj);
         const currentConnection = connections.shift();
 
         if (currentConnection === undefined) {
             return html`
-                <ha-card class="ptc-theme-${theme}">
-                    ${title ? html`<h1>${title}</h1>` : ''}
-                    <div class="no-connections" @click="${(ev) => this._handleAction('tap')}">
-                        No connections found.
-                    </div>
-                </ha-card>
+                <div class="no-connections" @click="${(ev) => this.handleAction('tap')}">
+                    No connections found.
+                </div>
             `;
         }
 
         return html`
-            <ha-card class="ptc-theme-${theme}">
-                ${title ? html`<h1>${title}</h1>` : ''}
-                <div class="ptc-main" @click="${(ev) => this._handleAction('tap')}">
-                    <div class="ptc-row ptc-stations">
-                        <div class="ptc-station-departure">${currentConnection.departure.station}</div>
-                        <div class="ptc-icon">
-                            <ha-icon icon="${icon}">
-                        </div>
-                        <div class="ptc-station-arrival">${currentConnection.arrival.station}</div>
+            <div class="ptc-main" @click="${(ev) => this.handleAction('tap')}">
+                <div class="ptc-row ptc-stations">
+                    <div class="ptc-station-departure">${currentConnection.departure.station}</div>
+                    <div class="ptc-icon">
+                        <ha-icon icon="${icon}">
                     </div>
-                    <div class="ptc-row ptc-time-bar">
-                        <div class="ptc-time-bar-bullet"></div>
-                        <div class="ptc-time-bar-line"></div>
-                        <div class="ptc-time-bar-bullet"></div>
-                    </div>
-                    <div class="ptc-row ptc-connection ptc-current-connection">
-                        <div class="ptc-time-departure">
-                            ${currentConnection.departure.time}
-                            ${currentConnection.departure.delay > 0 ? html`+ ${currentConnection.departure.delay}` : ''}
-                        </div>
-                        <div class="ptc-connection-description">${currentConnection.description}</div>
-                        <div class="ptc-time-arrival">
-                            ${currentConnection.arrival.time}
-                            ${currentConnection.arrival.delay > 0 ? html`+ ${currentConnection.arrival.delay}` : ''}
-                        </div>
-                    </div>
-                    ${connections.map(connection => html`
-                        <div class="ptc-row ptc-connection ptc-next-connection">
-                            <div class="ptc-time-departure">
-                                ${connection.departure.time}
-                                ${connection.departure.delay > 0 ? html`+ ${connection.departure.delay}` : ''}
-                            </div>
-                            <div class="ptc-connection-description">${connection.description}</div>
-                            <div class="ptc-time-arrival">
-                                ${connection.arrival.time}
-                                ${connection.arrival.delay > 0 ? html`+ ${connection.arrival.delay}` : ''}
-                            </div>
-                        </div>
-                    `)}
+                    <div class="ptc-station-arrival">${currentConnection.arrival.station}</div>
                 </div>
-            </ha-card>
+                <div class="ptc-row ptc-time-bar">
+                    <div class="ptc-time-bar-bullet"></div>
+                    <div class="ptc-time-bar-line"></div>
+                    <div class="ptc-time-bar-bullet"></div>
+                </div>
+                <div class="ptc-row ptc-connection ptc-current-connection">
+                    <div class="ptc-time-departure">
+                        ${currentConnection.departure.time}
+                        ${currentConnection.departure.delay > 0 ? html`+ ${currentConnection.departure.delay}` : ''}
+                    </div>
+                    <div class="ptc-connection-description">${currentConnection.description}</div>
+                    <div class="ptc-time-arrival">
+                        ${currentConnection.arrival.time}
+                        ${currentConnection.arrival.delay > 0 ? html`+ ${currentConnection.arrival.delay}` : ''}
+                    </div>
+                </div>
+                ${connections.map(connection => html`
+                    <div class="ptc-row ptc-connection ptc-next-connection">
+                        <div class="ptc-time-departure">
+                            ${connection.departure.time}
+                            ${connection.departure.delay > 0 ? html`+ ${connection.departure.delay}` : ''}
+                        </div>
+                        <div class="ptc-connection-description">${connection.description}</div>
+                        <div class="ptc-time-arrival">
+                            ${connection.arrival.time}
+                            ${connection.arrival.delay > 0 ? html`+ ${connection.arrival.delay}` : ''}
+                        </div>
+                    </div>
+                `)}
+            </div>
         `;
     }
 
@@ -166,49 +136,15 @@ class AbstractConnectionListCard extends LitElement {
         };
     }
 
-    _handleAction(action) {
-        const event = new Event('hass-action', {
-            bubbles: true,
-            composed: true,
-        });
-
-        event.detail = {
-            config: this.config,
-            action: action,
-        };
-
-        this.dispatchEvent(event);
-    }
-
     static get styles() {
         return css`
+            ${AbstractCard.styles}
+
             :host {
-                --public-transport-connection-card-background-color: #EC0016;
-                --public-transport-connection-card-foreground-color: #FFFFFF;
-                --public-transport-connection-card-size: 10px;
-
-                --public-transport-connection-card-inner-padding: var(--public-transport-connection-card-size);
-                --public-transport-connection-card-time-bar-size: var(--public-transport-connection-card-size);
-            }
-
-            ha-card {
-                overflow: hidden;
-                position: relative;
-                height: 100%;
-                box-sizing: border-box;
-
-                background-color: var(--public-transport-connection-card-background-color);
-                color: var(--public-transport-connection-card-foreground-color);
+                --public-transport-connection-card-time-bar-size: var(--public-transport-card-size);
             }
 
             /* Card */
-
-            h1 {
-                font-family: var(--ha-card-header-font-family, inherit);
-                font-size: var(--ha-card-header-font-size, 24px);
-                font-weight: 400;
-                margin: calc(var(--public-transport-connection-card-inner-padding) * 2) calc(var(--public-transport-connection-card-inner-padding) * 1.5) calc(var(--public-transport-connection-card-inner-padding) / 2);
-            }
 
             .ptc-main {
                 display: flex;
@@ -219,24 +155,24 @@ class AbstractConnectionListCard extends LitElement {
             }
 
             .ptc-main > :first-child {
-                padding-top: var(--public-transport-connection-card-inner-padding);
+                padding-top: var(--public-transport-card-inner-padding);
             }
 
             .ptc-main > :last-child {
-                padding-bottom: var(--public-transport-connection-card-inner-padding);
+                padding-bottom: var(--public-transport-card-inner-padding);
             }
 
             .ptc-row {
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
-                padding: 0 calc(var(--public-transport-connection-card-inner-padding) * 1.5);
+                padding: 0 calc(var(--public-transport-card-inner-padding) * 1.5);
             }
 
             /* Stations */
 
             .ptc-stations {
-                padding-bottom: calc(var(--public-transport-connection-card-size) / 2);
+                padding-bottom: calc(var(--public-transport-card-size) / 2);
             }
 
             .ptc-stations > * {
@@ -260,7 +196,7 @@ class AbstractConnectionListCard extends LitElement {
 
             .ptc-time-bar-bullet,
             .ptc-time-bar-line {
-                background-color: var(--public-transport-connection-card-foreground-color);
+                background-color: var(--public-transport-card-foreground-color);
             }
 
             .ptc-time-bar-bullet {
@@ -278,7 +214,7 @@ class AbstractConnectionListCard extends LitElement {
             /* Connection */
 
             .ptc-connection.ptc-current-connection {
-                padding-top: calc(var(--public-transport-connection-card-size) / 2);
+                padding-top: calc(var(--public-transport-card-size) / 2);
             }
 
             .ptc-connection.ptc-next-connection {
@@ -299,25 +235,6 @@ class AbstractConnectionListCard extends LitElement {
 
             .ptc-connection .ptc-time-arrival {
                 text-align: right;
-            }
-
-            /* Themes */
-
-            /** Deutsche Bahn **/
-
-            .ptc-theme-deutsche-bahn {
-                /* nothing to do, as this is the default */
-            }
-
-            /** Homeassistant **/
-
-            .ptc-theme-homeassistant {
-                --public-transport-connection-card-background-color: var(--ha-card-background, var(--card-background-color, #fff));
-                --public-transport-connection-card-foreground-color: var(--primary-text-color);
-            }
-
-            .ptc-theme-homeassistant h1 {
-                color: var(--ha-card-header-color, --primary-text-color);
             }
         `;
     }

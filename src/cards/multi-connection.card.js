@@ -2,12 +2,8 @@ class MultiPublicTransportConnectionCard extends AbstractConnectionListCard {
     static getConfigForm() {
         return {
             schema: [
-                {
-                    name: "entity",
-                    required: true,
-                    selector: {entity: {domain: "sensor"}},
-                },
-                {name: "title", selector: {text: {}}},
+                ...super.getConfigForm().schema,
+
                 {name: "icon", selector: {icon: {}}},
                 {name: "departure_station", selector: {text: {}}},
                 {name: "arrival_station", selector: {text: {}}},
@@ -33,15 +29,6 @@ class MultiPublicTransportConnectionCard extends AbstractConnectionListCard {
                     ],
                 },
                 {name: "displayed_connections", selector: {number: {min: 1}}},
-                {
-                    name: "theme",
-                    selector: {
-                        select: {
-                            options: AbstractConnectionListCard.AVAILABLE_THEMES,
-                            custom_value: true,
-                        }
-                    }
-                }
             ],
         };
     }
@@ -52,69 +39,71 @@ class MultiPublicTransportConnectionCard extends AbstractConnectionListCard {
      */
     static getStubConfig(hass, unusedEntities, allEntities) {
         // defaults for deutschebahn and hafas
-        const defaultAttributes = {
-            connections: ['departures', 'connections'],
-            departureStation: ['start', 'origin'],
-            arrivalStation: ['goal', 'destination'],
+        const defaultConfigs = {
+            ha_deutschebahn: {
+                entityTypes: ['sensor'],
+                entityAttributes: ['departures'],
+                getConfig: (entity) => ({
+                    departure_station: entity.attributes.start,
+                    arrival_station: entity.attributes.goal,
+                    connections_attribute: 'departures',
+                    connection_properties: {
+                        description: 'products',
+                        departure_time: 'departure',
+                        departure_delay: 'delay',
+                        arrival_time: 'arrival',
+                        arrival_delay: 'delay_arrival',
+                    },
+                }),
+            },
+            hafas: {
+                entityTypes: ['sensor'],
+                entityAttributes: ['connections'],
+                getConfig: (entity) => ({
+                    departure_station: entity.attributes.origin,
+                    arrival_station: entity.attributes.destination,
+                    connections_attribute: 'connections',
+                    connection_properties: {
+                        description: 'products',
+                        departure_time: 'departure',
+                        departure_delay: 'delay',
+                        arrival_time: 'arrival',
+                        arrival_delay: 'delay_arrival',
+                    },
+                }),
+            },
         };
 
-        function getAttributeName(entityId, defaultAttributes) {
-            const entity = hass.states[entityId] ?? {attributes: {}};
-
-            for (const attribute of defaultAttributes) {
-                if (entity.attributes[attribute] !== undefined) {
-                    return attribute;
-                }
-            }
-
-            return undefined;
-        }
-
-        function getAttribute(entityId, defaultAttributes, defaultValue = undefined) {
-            const entity = hass.states[entityId] ?? {attributes: {}};
-            const attributeName = getAttributeName(entityId, defaultAttributes);
-
-            if (attributeName === undefined) {
-                return defaultValue;
-            } else {
-                return entity.attributes[attributeName];
-            }
-        }
-
-        function isPublicTransportSensor(entityId) {
-            if (entityId.split('.')[0] !== 'sensor') {
-                return false;
-            }
-
-            return getAttributeName(entityId, defaultAttributes.connections) !== undefined;
-        }
-
-        let entityId = unusedEntities.find(isPublicTransportSensor);
-        if (!entityId) {
-            entityId = allEntities.find(isPublicTransportSensor) || '';
-        }
+        const defaultConfig = super.detectDefaultConfig(
+            defaultConfigs,
+            [...unusedEntities, ...allEntities],
+            hass
+        ) || {};
 
         return {
-            ...AbstractConnectionListCard.getStubConfig(hass, unusedEntities, allEntities),
-            departure_station: getAttribute(entityId, defaultAttributes.departureStation, ''),
-            arrival_station: getAttribute(entityId, defaultAttributes.arrivalStation, ''),
-            connections_attribute: getAttributeName(entityId, defaultAttributes.connections),
-            connection_properties: {
-                description: 'products',
-                departure_time: 'departure',
-                departure_delay: 'delay',
-                arrival_time: 'arrival',
-                arrival_delay: 'delay_arrival',
-            },
+            ...super.getStubConfig(hass, unusedEntities, allEntities),
+
+            departure_station: '',
+            arrival_station: '',
+            connections_attribute: '',
             displayed_connections: 3,
-        };
+            connection_properties: {
+                description: '',
+                departure_time: '',
+                departure_delay: '',
+                arrival_time: '',
+                arrival_delay: '',
+            },
+
+            ...defaultConfig,
+        }
     }
 
     /**
      * @override
      * @inheritDoc
      */
-    getConnections(entityId, stateObj) {
+    getConnections(stateObj) {
         /** @type {Array<ConnectionDetail>} */
         const connections = [];
 

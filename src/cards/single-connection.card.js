@@ -2,12 +2,8 @@ class SinglePublicTransportConnectionCard extends AbstractConnectionListCard {
     static getConfigForm() {
         return {
             schema: [
-                {
-                    name: "entity",
-                    required: true,
-                    selector: {entity: {domain: "sensor"}},
-                },
-                {name: "title", selector: {text: {}}},
+                ...super.getConfigForm().schema,
+
                 {name: "icon", selector: {icon: {}}},
                 {name: "departure_station", selector: {text: {}}},
                 {name: "arrival_station", selector: {text: {}}},
@@ -136,15 +132,6 @@ class SinglePublicTransportConnectionCard extends AbstractConnectionListCard {
                         },
                     ],
                 },
-                {
-                    name: "theme",
-                    selector: {
-                        select: {
-                            options: AbstractConnectionListCard.AVAILABLE_THEMES,
-                            custom_value: true,
-                        }
-                    }
-                }
             ],
         };
     }
@@ -155,7 +142,7 @@ class SinglePublicTransportConnectionCard extends AbstractConnectionListCard {
      */
     static getStubConfig(hass, unusedEntities, allEntities) {
         return {
-            ...AbstractConnectionListCard.getStubConfig(hass, unusedEntities, allEntities),
+            ...super.getStubConfig(hass, unusedEntities, allEntities),
             attributes: {
                 description: '',
                 departure_time: '',
@@ -178,7 +165,7 @@ class SinglePublicTransportConnectionCard extends AbstractConnectionListCard {
      * @override
      * @inheritDoc
      */
-    getConnections(entityId, stateObj) {
+    getConnections(stateObj) {
         /** @type {Array<ConnectionDetail>} */
         const connections = [];
 

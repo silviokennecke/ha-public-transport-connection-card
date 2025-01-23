@@ -16,34 +16,59 @@ import {
  *         user_id: string,
  *     },
  * }} HassStateObject
- */
-
-/**
+ *
  * @typedef {{
  *     states: {
  *         [entityId: string]: HassStateObject,
  *     },
  * }} HassObject
- */
-
-/**
+ *
  * @typedef {{
  *     entityTypes?: string[],
  *     entityAttributes?: string[],
  *     isEntitySupported?: (entity: HassStateObject) => boolean,
  *     getConfig: (entity: HassStateObject) => Object,
  * }} DefaultDiscoverableConfig
- */
-
-/**
+ *
  * @typedef {DefaultDiscoverableConfig[]|{[key: string]: DefaultDiscoverableConfig}} DefaultDiscoverableConfigs
  */
 
+/**
+ * @class
+ * @property {HassObject} hass
+ * @property {Object} config
+ */
 class AbstractCard extends LitElement {
     static AVAILABLE_THEMES = [
         'deutsche-bahn',
         'homeassistant',
     ];
+
+    /**
+     * @abstract
+     * @returns {{schema: Object[]}}
+     */
+    static getConfigForm() {
+        return {
+            schema: [
+                {
+                    name: "entity",
+                    required: true,
+                    selector: {entity: {domain: "sensor"}},
+                },
+                {name: "title", selector: {text: {}}},
+                {
+                    name: "theme",
+                    selector: {
+                        select: {
+                            options: this.AVAILABLE_THEMES,
+                            custom_value: true,
+                        }
+                    }
+                }
+            ],
+        };
+    }
 
     /**
      * @param {DefaultDiscoverableConfigs} defaultConfigs
@@ -97,6 +122,20 @@ class AbstractCard extends LitElement {
         }
 
         return undefined;
+    }
+
+    /**
+     * @param {HassObject} hass
+     * @param {string[]} unusedEntities
+     * @param {string[]} allEntities
+     * @returns {Object}
+     */
+    static getStubConfig(hass, unusedEntities, allEntities) {
+        return {
+            title: '',
+            entity: '',
+            theme: 'deutsche-bahn',
+        };
     }
 
     static get properties() {
@@ -154,5 +193,59 @@ class AbstractCard extends LitElement {
                 color: var(--ha-card-header-color, --primary-text-color);
             }
         `;
+    }
+
+    render() {
+        const title = this.config.title || '';
+        const entityId = this.config.entity || '';
+        const theme = this.config.theme || AbstractCard.AVAILABLE_THEMES[0];
+        const stateObj = this.hass.states[entityId];
+
+        if (!stateObj) {
+            return html`
+                <ha-card class="ptc-theme-${theme}">
+                    ${title ? html`<h1>${title}</h1>` : ''}
+                    <div class="not-found">Entity ${entityId} not found.</div>
+                </ha-card>
+            `;
+        }
+
+        return html`
+            <ha-card class="ptc-theme-${this.config.theme}">
+                ${title ? html`<h1>${title}</h1>` : ''}
+                ${this.renderInnerCard(stateObj)}
+            </ha-card>
+        `;
+    }
+
+    /**
+     * @abstract
+     * @protected
+     * @param {HassStateObject} entityState
+     * @returns {string}
+     */
+    renderInnerCard(entityState) {
+        return html`
+            Not implemented. The card must implement the renderInnerCard method.
+        `;
+    }
+
+    /**
+     * Helper to handle actions on cards (e.g. tap)
+     * @protected
+     * @param {string} action
+     */
+    handleAction(action) {
+        const event = new Event('hass-action', {
+            bubbles: true,
+            composed: true,
+        });
+
+        event.detail = {
+            config: this.config,
+            action: action,
+        };
+
+        this.dispatchEvent(event);
     }
 }
