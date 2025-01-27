@@ -185,8 +185,8 @@ class AbstractCard extends LitElement {
             /** Homeassistant **/
 
             .ptc-theme-homeassistant {
-                --public-transport-connection-card-background-color: var(--ha-card-background, var(--card-background-color, #fff));
-                --public-transport-connection-card-foreground-color: var(--primary-text-color);
+                --public-transport-card-background-color: var(--ha-card-background, var(--card-background-color, #fff));
+                --public-transport-card-foreground-color: var(--primary-text-color);
             }
 
             .ptc-theme-homeassistant h1 {
