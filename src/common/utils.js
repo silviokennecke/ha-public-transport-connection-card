@@ -20,6 +20,25 @@ function timeToStr(time) {
     return parse ? (new Date(parse)).toLocaleTimeString([], {'timeStyle': 'short'}) : time;
 }
 
+function timeOffset(time, delay) {
+    const [targetHours, targetMinutes] = time.split(":").map(Number);
+
+    const now = new Date();
+    const currentHours = now.getHours();
+    const currentMinutes = now.getMinutes();
+
+    const currentTotalMinutes = currentHours * 60 + currentMinutes;
+    const targetTotalMinutes = targetHours * 60 + targetMinutes;
+
+    let offset = targetTotalMinutes - currentTotalMinutes;
+
+    if (offset < 0) {
+        offset += 24 * 60;
+    }
+
+    return offset + delay;
+}
+
 function parseBool(value) {
     if (typeof value === 'boolean') {
         return value;
