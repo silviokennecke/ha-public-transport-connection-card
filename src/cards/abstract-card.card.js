@@ -231,7 +231,7 @@ class AbstractCard extends LitElement {
      * @throws {Error}
      */
     setConfig(config) {
-        this.modifyConfig(config);
+        config = this.modifyConfig(config);
         this.checkConfig(config);
 
         this.config = config;
