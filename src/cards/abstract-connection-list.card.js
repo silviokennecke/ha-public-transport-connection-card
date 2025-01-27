@@ -1,11 +1,23 @@
-import {
-    html,
-    css,
-} from "https://unpkg.com/lit-element@2.0.1/lit-element.js?module";
-
 /**
- * @typedef {{title: string, entity: string, theme: string, icon?: string, departure_station?: string, arrival_station?: string}} ConnectionListCardConfig
- * @typedef {{description: string, departure: { time: string, delay: number, station: string }, arrival: { time: string, delay: number, station: string }}} ConnectionDetail
+ * @typedef {CardConfig&{
+ *     icon?: string,
+ *     departure_station?: string,
+ *     arrival_station?: string
+ * }} ConnectionListCardConfig
+ *
+ * @typedef {{
+ *     description: string,
+ *     departure: {
+ *         time: string,
+ *         delay: number,
+ *         station: string,
+ *     },
+ *     arrival: {
+ *         time: string,
+ *         delay: number,
+ *         station: string,
+ *     }
+ * }} ConnectionDetail
  */
 
 class AbstractConnectionListCard extends AbstractCard {
@@ -42,7 +54,7 @@ class AbstractConnectionListCard extends AbstractCard {
 
         const icon = this.config.icon || stateObj.attributes.icon || 'mdi:train';
 
-        const connections = this.getConnections(entityState.entity_id, stateObj);
+        const connections = this.getConnections(stateObj);
         const currentConnection = connections.shift();
 
         if (currentConnection === undefined) {
@@ -96,31 +108,20 @@ class AbstractConnectionListCard extends AbstractCard {
     }
 
     /**
-     * @param {ConnectionListCardConfig} config
-     * @returns {void}
-     * @throws {Error}
-     */
-    checkConfig(config) {
-        if (!config.entity) {
-            throw new Error("You need to define an entity");
-        }
-    }
-
-    /**
      * @final
      * @param {ConnectionListCardConfig} config
-     * @returns {void}
+     * @returns {ConnectionListCardConfig}
      * @throws {Error}
      */
-    setConfig(config) {
-        this.checkConfig(config);
-
-        this.config = {
+    modifyConfig(config) {
+        const mergedConfig = {
             tap_action: {
                 action: 'more-info',
             },
             ...config,
         };
+
+        return super.modifyConfig(mergedConfig);
     }
 
     getCardSize() {

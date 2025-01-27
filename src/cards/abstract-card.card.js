@@ -1,9 +1,3 @@
-import {
-    LitElement,
-    html,
-    css,
-} from "https://unpkg.com/lit-element@2.0.1/lit-element.js?module";
-
 /**
  * @typedef {{
  *     entity_id: string,
@@ -31,6 +25,12 @@ import {
  * }} DefaultDiscoverableConfig
  *
  * @typedef {DefaultDiscoverableConfig[]|{[key: string]: DefaultDiscoverableConfig}} DefaultDiscoverableConfigs
+ *
+ * @typedef {{
+ *     title: string,
+ *     entity: string,
+ *     theme: string,
+ * }} CardConfig
  */
 
 /**
@@ -195,6 +195,52 @@ class AbstractCard extends LitElement {
         `;
     }
 
+    /**
+     * Allows children to modify the configuration before it is validated or stored
+     * @protected
+     * @param {CardConfig} config
+     * @returns {CardConfig}
+     */
+    modifyConfig(config) {
+        return {
+            title: '',
+            entity: '',
+            theme: 'deutsche-bahn',
+            ...config,
+        };
+    }
+
+    /**
+     * Validates the configuration
+     * @protected
+     * @param {CardConfig} config
+     * @returns {void}
+     * @throws {Error}
+     */
+    checkConfig(config) {
+        if (!config.entity) {
+            throw new Error("You need to define an entity");
+        }
+    }
+
+    /**
+     * @public
+     * @final
+     * @param {CardConfig} config
+     * @returns {void}
+     * @throws {Error}
+     */
+    setConfig(config) {
+        this.modifyConfig(config);
+        this.checkConfig(config);
+
+        this.config = config;
+    }
+
+    /**
+     * @public
+     * @returns {string}
+     */
     render() {
         const title = this.config.title || '';
         const entityId = this.config.entity || '';
