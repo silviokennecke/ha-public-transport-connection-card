@@ -226,6 +226,13 @@ class PublicTransportDepartureCard extends AbstractCard {
                 flex: 1;
             }
 
+            .ptcd-time-departure,
+            .ptcd-time-departure-offset,
+            .ptcd-train,
+            .ptcd-platform {
+                white-space: nowrap;
+            }
+
             .ptcd-first-departure {
                 justify-content: flex-start;
                 gap: calc(2 * var(--public-transport-card-inner-padding));
@@ -259,7 +266,6 @@ class PublicTransportDepartureCard extends AbstractCard {
             .ptcd-next-departure .ptcd-train,
             .ptcd-next-departure .ptcd-platform {
                 flex: 1;
-                white-space: nowrap;
             }
 
             .ptcd-next-departure .ptcd-direction {
