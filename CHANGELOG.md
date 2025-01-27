@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Restructured the repository for better maintainability
+- Extracted the connections card using static attributes for current and next connection into a separate card `public-transport-connections-attributes-card`
+- Extracted the connections card using a connections attribute, containing an array of connections, into a separate card `public-transport-connections-card`
+
 ## [2.0.1] - 2025-01-15
 
 ### Fixed

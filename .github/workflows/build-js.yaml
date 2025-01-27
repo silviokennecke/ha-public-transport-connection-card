@@ -31,7 +31,7 @@ jobs:
 
     - name: Minify and merge JS files
       run: |
-        terser $(find src -name "*.js") --output dist/ha-public-transport-connection-card.js
+        npm run build
 
     - name: Commit and push changes
       run: |
