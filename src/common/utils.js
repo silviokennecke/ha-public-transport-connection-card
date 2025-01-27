@@ -32,7 +32,8 @@ function timeOffset(time, delay) {
 
     let offset = targetTotalMinutes - currentTotalMinutes;
 
-    if (offset < 0) {
+    // assume target time is tomorrow if offset is more than 3 hours in the past
+    if (offset < -3 * 60) {
         offset += 24 * 60;
     }
 
