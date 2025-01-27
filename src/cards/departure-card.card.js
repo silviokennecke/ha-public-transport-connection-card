@@ -1,7 +1,6 @@
 /**
  * @typedef {CardConfig&{
-*     layout: string,
- *    station: string,
+ *    layout: string,
  *    departures_attribute: string,
  *    departure_properties: {
  *        time: string,
@@ -12,7 +11,7 @@
  *        platform?: string,
  *        next_stations?: string,
  *    },
- *    destination_filter: string,
+ *    destination_filter?: string,
  *    displayed_departures: number,
  * }} DepartureCardConfig
  */
@@ -29,9 +28,14 @@
  * }} Departure
  */
 
+/**
+ * @typedef {'station_departures'|'platform_departures'|'fixed_destination'} DepartureCardLayouts
+ * @typedef {'time'|'offset'|'train'|'direction'|'next_stations'|'platform'|'spacer'} DepartureCardColumnTypes
+ */
+
 class PublicTransportDepartureCard extends AbstractCard {
     /**
-     * @type {string[][]}
+     * @type {DepartureCardColumnTypes[][]}
      */
     static FIRST_DEPARTURE_LAYOUT = [
         ['time', 'train'],
@@ -41,9 +45,9 @@ class PublicTransportDepartureCard extends AbstractCard {
     ];
 
     /**
-     * @type {{[key: string]: {
-     *     firstDepartureLayout?: string[][],
-     *     columns: string[],
+     * @type {{[key: DepartureCardLayouts]: {
+     *     firstDepartureLayout?: DepartureCardColumnTypes[][],
+     *     columns: DepartureCardColumnTypes[],
      *     cardSize?: number,
      *     layoutOptions?: {
      *         grid_rows: number,
@@ -100,7 +104,6 @@ class PublicTransportDepartureCard extends AbstractCard {
                         }
                     }
                 },
-                {name: "station", selector: {text: {}}},
                 {
                     name: "departures_attribute",
                     required: true,
@@ -215,6 +218,14 @@ class PublicTransportDepartureCard extends AbstractCard {
                 padding: 0 calc(var(--public-transport-card-inner-padding) * 1.5);
             }
 
+            .ptcd-is-cancelled {
+                text-decoration: line-through;
+            }
+
+            .ptcd-spacer {
+                flex: 1;
+            }
+
             .ptcd-first-departure {
                 justify-content: flex-start;
                 gap: calc(2 * var(--public-transport-card-inner-padding));
@@ -228,14 +239,19 @@ class PublicTransportDepartureCard extends AbstractCard {
                 margin-bottom: calc(0.5 * var(--public-transport-card-inner-padding));
             }
 
-            .ptcd-first-departure > .ptcd-next-departure-section > :first-child {
+            .ptcd-first-departure > .ptcd-first-departure-section > :first-child {
                 font-size: 1.3em;
             }
-            .ptcd-first-departure > .ptcd-next-departure-section > .ptcd-platform:first-child:last-child {
+            .ptcd-first-departure > .ptcd-first-departure-section > .ptcd-platform:first-child:last-child {
                 display: flex;
                 height: 100%;
                 align-items: center;
                 font-size: 2em;
+            }
+
+            .ptcd-next-departure {
+                font-size: 0.85em;
+                opacity: 0.9;
             }
 
             .ptcd-next-departure .ptcd-time-departure,
@@ -264,28 +280,6 @@ class PublicTransportDepartureCard extends AbstractCard {
             .ptcd-next-departure .ptcd-platform:last-child {
                 text-align: right;
             }
-
-            .ptcd-is-cancelled {
-                text-decoration: line-through;
-            }
-
-            .ptcd-spacer {
-                flex: 1;
-            }
-
-            /* Layouts */
-
-            /* platform departure offset */
-            .ptcd-next-departure {
-                font-size: 0.85em;
-                opacity: 0.9;
-            }
-
-            /* fixed destination */
-            .ptcd-layout-fixed_destination .ptcd-next-departure {
-                font-size: 0.85em;
-                opacity: 0.9;
-            }
         `;
     }
 
@@ -304,8 +298,6 @@ class PublicTransportDepartureCard extends AbstractCard {
             `;
         }
 
-        const icon = this.config.icon || stateObj.attributes.icon || 'mdi:train';
-
         const departures = this._getDepartures();
         const layoutConfig = this.constructor.LAYOUT_PRESETS[this.config.layout];
 
@@ -319,7 +311,7 @@ class PublicTransportDepartureCard extends AbstractCard {
                     ${layoutConfig.firstDepartureLayout && firstDeparture ? html`
                         <div class="ptcd-row ptcd-first-departure ${firstDeparture.isCancelled ? 'ptcd-is-cancelled' : ''}">
                             ${layoutConfig.firstDepartureLayout.map(row => html`
-                                <div class="ptcd-next-departure-section ${row.length === 0 ? 'ptcd-spacer' : ''}">
+                                <div class="ptcd-first-departure-section ${row.length === 0 ? 'ptcd-spacer' : ''}">
                                     ${row.map(column => this._renderColumn(firstDeparture, column))}
                                 </div>
                             `)}
@@ -362,10 +354,28 @@ class PublicTransportDepartureCard extends AbstractCard {
      */
     checkConfig(config) {
         if (!Object.keys(this.constructor.LAYOUT_PRESETS).includes(config.layout)) {
-            throw new Error("Please configure a valid layout.");
+            throw new Error("You must define a valid layout. Available layouts: " + Object.keys(this.constructor.LAYOUT_PRESETS).join(', '));
         }
 
-        // TODO
+        if (!config.departures_attribute || config.departures_attribute === '') {
+            throw new Error("You must define which attribute of the sensor holds the departures as array.");
+        }
+
+        if (!config.departure_properties) {
+            throw new Error("You must define the departure_properties.");
+        }
+
+        if (!config.departure_properties.time) {
+            throw new Error("You must define the time property for the departure entries.");
+        }
+
+        if (!config.departure_properties.direction) {
+            throw new Error("You must define the direction property for the departure entries.");
+        }
+
+        if (!config.displayed_departures || config.displayed_departures < 1) {
+            throw new Error("displayed_connections must be set to 1 or higher");
+        }
     }
 
     getCardSize() {
@@ -444,7 +454,7 @@ class PublicTransportDepartureCard extends AbstractCard {
 
     /**
      * @param {Departure} departure
-     * @param {string} columnType
+     * @param {DepartureCardColumnTypes} columnType
      * @returns {string}
      * @private
      */
