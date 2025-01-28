@@ -77,7 +77,9 @@ class PublicTransprtAbstractCard extends LitElement {
      * @returns {Object|undefined}
      */
     static detectDefaultConfig(defaultConfigs, entityIds, hass) {
-        for (const defaultConfig of defaultConfigs) {
+        const configs = Array.isArray(defaultConfigs) ? defaultConfigs : Object.values(defaultConfigs);
+
+        for (const defaultConfig of configs) {
             const entityId = entityIds.find(
                 (entityId) => {
                     /** @type {HassStateObject} */
