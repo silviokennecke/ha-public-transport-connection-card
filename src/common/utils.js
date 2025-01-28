@@ -1,4 +1,4 @@
-function delayToMinutes(delay) {
+function ptcDelayToMinutes(delay) {
     // delay as number
     if (typeof delay === 'number') {
         return delay;
@@ -15,12 +15,12 @@ function delayToMinutes(delay) {
     return parseInt(delay) || 0;
 }
 
-function timeToStr(time) {
+function ptcTimeToStr(time) {
     const parse = Date.parse(time);
     return parse ? (new Date(parse)).toLocaleTimeString([], {'timeStyle': 'short'}) : time;
 }
 
-function timeOffset(time, delay) {
+function ptcTimeOffset(time, delay) {
     const [targetHours, targetMinutes] = time.split(":").map(Number);
 
     const now = new Date();
@@ -40,7 +40,7 @@ function timeOffset(time, delay) {
     return offset + delay;
 }
 
-function parseBool(value) {
+function ptcParseBool(value) {
     if (typeof value === 'boolean') {
         return value;
     }

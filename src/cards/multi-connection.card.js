@@ -121,13 +121,13 @@ class MultiPublicTransportConnectionCard extends PublicTransprtAbstractConnectio
             connections.push({
                 description: Array.isArray(nextDescription) ? nextDescription.join(', ') : nextDescription,
                 departure: {
-                    time: timeToStr(nextConnection[this.config.connection_properties.departure_time]),
-                    delay: delayToMinutes(nextConnection[this.config.connection_properties.departure_delay]),
+                    time: ptcTimeToStr(nextConnection[this.config.connection_properties.departure_time]),
+                    delay: ptcDelayToMinutes(nextConnection[this.config.connection_properties.departure_delay]),
                     station: nextConnection[this.config.connection_properties.departure_station] || this.config.departure_station || '',
                 },
                 arrival: {
-                    time: timeToStr(nextConnection[this.config.connection_properties.arrival_time]),
-                    delay: delayToMinutes(nextConnection[this.config.connection_properties.arrival_delay]),
+                    time: ptcTimeToStr(nextConnection[this.config.connection_properties.arrival_time]),
+                    delay: ptcDelayToMinutes(nextConnection[this.config.connection_properties.arrival_delay]),
                     station: nextConnection[this.config.connection_properties.arrival_station] || this.config.arrival_station || '',
                 },
             });

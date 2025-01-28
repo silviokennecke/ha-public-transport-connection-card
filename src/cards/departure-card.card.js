@@ -407,7 +407,7 @@ class PublicTransportDepartureCard extends PublicTransprtAbstractCard {
 
             /** @type {Departure} */
             const departure = {
-                time: timeToStr(stateDeparture[this.config.departure_properties.time] || ''),
+                time: ptcTimeToStr(stateDeparture[this.config.departure_properties.time] || ''),
                 delay: 0,
                 isCancelled: false,
                 train: '',
@@ -417,11 +417,11 @@ class PublicTransportDepartureCard extends PublicTransprtAbstractCard {
             };
 
             if (this.config.departure_properties.delay) {
-                departure.delay = delayToMinutes(stateDeparture[this.config.departure_properties.delay] || 0);
+                departure.delay = ptcDelayToMinutes(stateDeparture[this.config.departure_properties.delay] || 0);
             }
 
             if (this.config.departure_properties.cancelled) {
-                departure.isCancelled = parseBool(stateDeparture[this.config.departure_properties.cancelled] || false);
+                departure.isCancelled = ptcParseBool(stateDeparture[this.config.departure_properties.cancelled] || false);
             }
 
             if (this.config.departure_properties.train) {
@@ -470,7 +470,7 @@ class PublicTransportDepartureCard extends PublicTransprtAbstractCard {
                 `;
 
             case 'offset':
-                const offset = timeOffset(departure.time, departure.delay);
+                const offset = ptcTimeOffset(departure.time, departure.delay);
                 return html`
                     <div class="ptcd-time-departure-offset">${offset}</div>
                 `;

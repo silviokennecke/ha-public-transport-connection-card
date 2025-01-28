@@ -174,13 +174,13 @@ class SinglePublicTransportConnectionCard extends PublicTransprtAbstractConnecti
         connections.push({
             description: Array.isArray(description) ? description.join(', ') : description,
             departure: {
-                time: timeToStr(stateObj.attributes[this.config.attributes.departure_time]),
-                delay: delayToMinutes(stateObj.attributes[this.config.attributes.departure_delay]),
+                time: ptcTimeToStr(stateObj.attributes[this.config.attributes.departure_time]),
+                delay: ptcDelayToMinutes(stateObj.attributes[this.config.attributes.departure_delay]),
                 station: stateObj.attributes[this.config.attributes.departure_station] || this.config.departure_station || '',
             },
             arrival: {
-                time: timeToStr(stateObj.attributes[this.config.attributes.arrival_time]),
-                delay: delayToMinutes(stateObj.attributes[this.config.attributes.arrival_delay]),
+                time: ptcTimeToStr(stateObj.attributes[this.config.attributes.arrival_time]),
+                delay: ptcDelayToMinutes(stateObj.attributes[this.config.attributes.arrival_delay]),
                 station: stateObj.attributes[this.config.attributes.arrival_station] || this.config.arrival_station || '',
             },
         });
@@ -192,13 +192,13 @@ class SinglePublicTransportConnectionCard extends PublicTransprtAbstractConnecti
                 {
                     description: Array.isArray(nextDescription) ? nextDescription.join(', ') : nextDescription,
                     departure: {
-                        time: timeToStr(stateObj.attributes[this.config.attributes.next_departure_time]),
-                        delay: delayToMinutes(stateObj.attributes[this.config.attributes.next_departure_delay]),
+                        time: ptcTimeToStr(stateObj.attributes[this.config.attributes.next_departure_time]),
+                        delay: ptcDelayToMinutes(stateObj.attributes[this.config.attributes.next_departure_delay]),
                         station: stateObj.attributes[this.config.attributes.next_departure_station] || this.config.departure_station || '',
                     },
                     arrival: {
-                        time: timeToStr(stateObj.attributes[this.config.attributes.next_arrival_time]),
-                        delay: delayToMinutes(stateObj.attributes[this.config.attributes.next_arrival_delay]),
+                        time: ptcTimeToStr(stateObj.attributes[this.config.attributes.next_arrival_time]),
+                        delay: ptcDelayToMinutes(stateObj.attributes[this.config.attributes.next_arrival_delay]),
                         station: stateObj.attributes[this.config.attributes.next_arrival_station] || this.config.arrival_station || '',
                     },
                 }
