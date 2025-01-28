@@ -289,21 +289,11 @@ class PublicTransportDepartureCard extends AbstractCard {
         `;
     }
 
-    render() {
-        const title = this.config.title;
-        const entityId = this.config.entity;
-        const theme = this.config.theme;
-        const stateObj = this.hass.states[entityId];
-
-        if (!stateObj) {
-            return html`
-                <ha-card class="ptd-theme-${theme}">
-                    ${title ? html`<h1>${title}</h1>` : ''}
-                    <div class="not-found">Entity ${entityId} not found.</div>
-                </ha-card>
-            `;
-        }
-
+    /**
+     * @override
+     * @inheritDoc
+     */
+    renderInnerCard(stateObj) {
         const departures = this._getDepartures();
         const layoutConfig = this.constructor.LAYOUT_PRESETS[this.config.layout];
 
@@ -311,25 +301,22 @@ class PublicTransportDepartureCard extends AbstractCard {
         const firstDeparture = layoutConfig.firstDepartureLayout ? nextDepartures.shift() : undefined;
 
         return html`
-            <ha-card class="ptc-theme-${theme} ptcd-layout-${this.config.layout}">
-                ${title ? html`<h1>${title}</h1>` : ''}
-                <div class="ptcd-main" @click="${(ev) => this.handleAction('tap')}">
-                    ${layoutConfig.firstDepartureLayout && firstDeparture ? html`
-                        <div class="ptcd-row ptcd-first-departure ${firstDeparture.isCancelled ? 'ptcd-is-cancelled' : ''}">
-                            ${layoutConfig.firstDepartureLayout.map(row => html`
-                                <div class="ptcd-first-departure-section ${row.length === 0 ? 'ptcd-spacer' : ''}">
-                                    ${row.map(column => this._renderColumn(firstDeparture, column))}
-                                </div>
-                            `)}
-                        </div>
-                    ` : ''}
-                    ${nextDepartures.map(departure => html`
-                        <div class="ptcd-row ptcd-next-departure ${departure.isCancelled ? 'ptcd-is-cancelled' : ''}">
-                            ${layoutConfig.columns.map(column => this._renderColumn(departure, column))}
-                        </div>
-                    `)}
-                </div>
-            </ha-card>
+            <div class="ptcd-main ptcd-layout-${this.config.layout}" @click="${(ev) => this.handleAction('tap')}">
+                ${layoutConfig.firstDepartureLayout && firstDeparture ? html`
+                    <div class="ptcd-row ptcd-first-departure ${firstDeparture.isCancelled ? 'ptcd-is-cancelled' : ''}">
+                        ${layoutConfig.firstDepartureLayout.map(row => html`
+                            <div class="ptcd-first-departure-section ${row.length === 0 ? 'ptcd-spacer' : ''}">
+                                ${row.map(column => this._renderColumn(firstDeparture, column))}
+                            </div>
+                        `)}
+                    </div>
+                ` : ''}
+                ${nextDepartures.map(departure => html`
+                    <div class="ptcd-row ptcd-next-departure ${departure.isCancelled ? 'ptcd-is-cancelled' : ''}">
+                        ${layoutConfig.columns.map(column => this._renderColumn(departure, column))}
+                    </div>
+                `)}
+            </div>
         `;
     }
 
