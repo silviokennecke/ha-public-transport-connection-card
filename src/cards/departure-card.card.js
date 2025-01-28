@@ -33,7 +33,7 @@
  * @typedef {'time'|'offset'|'train'|'direction'|'next_stations'|'platform'|'spacer'} DepartureCardColumnTypes
  */
 
-class PublicTransportDepartureCard extends AbstractCard {
+class PublicTransportDepartureCard extends PublicTransprtAbstractCard {
     /**
      * @type {DepartureCardColumnTypes[][]}
      */
@@ -193,7 +193,7 @@ class PublicTransportDepartureCard extends AbstractCard {
 
     static get styles() {
         return css`
-            ${AbstractCard.styles}
+            ${super.styles}
 
             .ptd-main {
                 display: flex;

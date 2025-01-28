@@ -1,4 +1,4 @@
-class MultiPublicTransportConnectionCard extends AbstractConnectionListCard {
+class MultiPublicTransportConnectionCard extends PublicTransprtAbstractConnectionListCard {
     static getConfigForm() {
         return {
             schema: [

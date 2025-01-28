@@ -20,7 +20,7 @@
  * }} ConnectionDetail
  */
 
-class AbstractConnectionListCard extends AbstractCard {
+class PublicTransprtAbstractConnectionListCard extends PublicTransprtAbstractCard {
     /**
      * @param {Object} hass
      * @param {Array<string>} unusedEntities
@@ -139,7 +139,7 @@ class AbstractConnectionListCard extends AbstractCard {
 
     static get styles() {
         return css`
-            ${AbstractCard.styles}
+            ${super.styles}
 
             :host {
                 --public-transport-connection-card-time-bar-size: var(--public-transport-card-size);

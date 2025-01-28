@@ -1,4 +1,4 @@
-class SinglePublicTransportConnectionCard extends AbstractConnectionListCard {
+class SinglePublicTransportConnectionCard extends PublicTransprtAbstractConnectionListCard {
     static getConfigForm() {
         return {
             schema: [

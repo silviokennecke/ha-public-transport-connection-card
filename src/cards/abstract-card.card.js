@@ -38,7 +38,7 @@
  * @property {HassObject} hass
  * @property {Object} config
  */
-class AbstractCard extends LitElement {
+class PublicTransprtAbstractCard extends LitElement {
     static AVAILABLE_THEMES = [
         'deutsche-bahn',
         'homeassistant',
@@ -244,7 +244,7 @@ class AbstractCard extends LitElement {
     render() {
         const title = this.config.title || '';
         const entityId = this.config.entity || '';
-        const theme = this.config.theme || AbstractCard.AVAILABLE_THEMES[0];
+        const theme = this.config.theme || this.constructor.AVAILABLE_THEMES[0];
         const stateObj = this.hass.states[entityId];
 
         if (!stateObj) {
