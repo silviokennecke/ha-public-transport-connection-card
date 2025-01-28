@@ -84,6 +84,7 @@ class PublicTransprtAbstractCard extends LitElement {
                 (entityId) => {
                     /** @type {HassStateObject} */
                     const entity = hass.states[entityId];
+                    let entityChecked = false;
 
                     // check by entity type
                     if (defaultConfig.entityTypes) {
@@ -91,6 +92,8 @@ class PublicTransprtAbstractCard extends LitElement {
                         if (!defaultConfig.entityTypes.includes(entityType)) {
                             return false;
                         }
+
+                        entityChecked = true;
                     }
 
                     // check by required attributes
@@ -107,11 +110,18 @@ class PublicTransprtAbstractCard extends LitElement {
                         if (!attributesExist) {
                             return false;
                         }
+
+                        entityChecked = true;
                     }
 
                     // check by custom function
                     if (defaultConfig.isEntitySupported) {
                         return defaultConfig.isEntitySupported(entity);
+                    }
+
+                    // validation success
+                    if (entityChecked) {
+                        return true;
                     }
 
                     throw new Error('Implementation error: The default configuration object must at least provide one method for entity detection.');

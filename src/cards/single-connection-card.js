@@ -213,6 +213,8 @@ class SinglePublicTransportConnectionCard extends PublicTransprtAbstractConnecti
      * @inheritDoc
      */
     checkConfig(config) {
+        super.checkConfig(config);
+
         if (!config.attributes.departure_time) {
             throw new Error("You need to define the departure attribute");
         }

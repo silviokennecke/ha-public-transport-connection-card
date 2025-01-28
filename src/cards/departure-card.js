@@ -354,6 +354,8 @@ class PublicTransportDepartureCard extends PublicTransprtAbstractCard {
      * @returns {void}
      */
     checkConfig(config) {
+        super.checkConfig(config);
+
         if (!Object.keys(this.constructor.LAYOUT_PRESETS).includes(config.layout)) {
             throw new Error("You must define a valid layout. Available layouts: " + Object.keys(this.constructor.LAYOUT_PRESETS).join(', '));
         }

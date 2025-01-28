@@ -44,6 +44,7 @@ class MultiPublicTransportConnectionCard extends PublicTransprtAbstractConnectio
                 entityTypes: ['sensor'],
                 entityAttributes: ['departures'],
                 getConfig: (entity) => ({
+                    entity: entity.entity_id,
                     departure_station: entity.attributes.start,
                     arrival_station: entity.attributes.goal,
                     connections_attribute: 'departures',
@@ -60,6 +61,7 @@ class MultiPublicTransportConnectionCard extends PublicTransprtAbstractConnectio
                 entityTypes: ['sensor'],
                 entityAttributes: ['connections'],
                 getConfig: (entity) => ({
+                    entity: entity.entity_id,
                     departure_station: entity.attributes.origin,
                     arrival_station: entity.attributes.destination,
                     connections_attribute: 'connections',
@@ -141,6 +143,8 @@ class MultiPublicTransportConnectionCard extends PublicTransprtAbstractConnectio
      * @inheritDoc
      */
     checkConfig(config) {
+        super.checkConfig(config);
+
         if (!config.displayed_connections || config.displayed_connections < 1) {
             throw new Error("displayed_connections must be set to 1 or higher");
         }
