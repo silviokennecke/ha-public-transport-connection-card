@@ -97,6 +97,7 @@ class PublicTransportDepartureCard extends AbstractCard {
 
                 {
                     name: "layout",
+                    required: true,
                     selector: {
                         select: {
                             options: Object.keys(this.LAYOUT_PRESETS),
@@ -118,11 +119,11 @@ class PublicTransportDepartureCard extends AbstractCard {
                     name: "departure_properties",
                     type: "grid",
                     schema: [
-                        {name: "time", selector: {text: {}}},
+                        {name: "time", required: true, selector: {text: {}}},
                         {name: "delay", selector: {text: {}}},
                         {name: "cancelled", selector: {text: {}}},
                         {name: "train", selector: {text: {}}},
-                        {name: "direction", selector: {text: {}}},
+                        {name: "direction", required: true, selector: {text: {}}},
                         {name: "platform", selector: {text: {}}},
                         {name: "next_stations", selector: {text: {}}},
                     ],
