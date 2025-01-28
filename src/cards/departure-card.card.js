@@ -172,7 +172,6 @@ class PublicTransportDepartureCard extends AbstractCard {
         return {
             ...super.getStubConfig(hass, unusedEntities, allEntities),
 
-            station: '', // e.g. Hamburg Hbf
             layout: Object.keys(this.LAYOUT_PRESETS)[0],
             departures_attribute: '',
             departure_properties: {
