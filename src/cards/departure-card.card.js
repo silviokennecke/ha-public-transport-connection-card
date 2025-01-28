@@ -297,6 +297,14 @@ class PublicTransportDepartureCard extends AbstractCard {
         const departures = this._getDepartures();
         const layoutConfig = this.constructor.LAYOUT_PRESETS[this.config.layout];
 
+        if (departures.length === 0) {
+            return html`
+                <div class="no-departures" @click="${(ev) => this.handleAction('tap')}">
+                    No departures found.
+                </div>
+            `;
+        }
+
         const nextDepartures = [...departures];
         const firstDeparture = layoutConfig.firstDepartureLayout ? nextDepartures.shift() : undefined;
 
