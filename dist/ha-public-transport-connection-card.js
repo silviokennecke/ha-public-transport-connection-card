@@ -198,7 +198,7 @@ import{LitElement,html,css}from"https://unpkg.com/lit-element@2.0.1/lit-element.
             .ptc-connection .ptc-time-arrival {
                 text-align: right;
             }
-        `}}class PublicTransportDepartureCard extends AbstractCard{static FIRST_DEPARTURE_LAYOUT=[["time","train"],["direction","next_stations"],[],["platform"]];static LAYOUT_PRESETS={station_departures:{firstDepartureLayout:this.FIRST_DEPARTURE_LAYOUT,columns:["time","train","next_stations","direction","platform"],layoutOptions:{grid_rows:3,grid_columns:4,grid_min_rows:2,grid_min_columns:3}},platform_departures:{firstDepartureLayout:[["train"],["direction"],[],["offset"]],columns:["train","direction","offset"],layoutOptions:{grid_rows:2,grid_columns:4,grid_min_rows:2,grid_min_columns:2}},fixed_destination:{firstDepartureLayout:this.FIRST_DEPARTURE_LAYOUT,columns:["time","train","next_stations","platform"],layoutOptions:{grid_rows:3,grid_columns:4,grid_min_rows:2,grid_min_columns:2}}};static getConfigForm(){return{schema:[...super.getConfigForm().schema,{name:"layout",selector:{select:{options:Object.keys(this.LAYOUT_PRESETS),custom_value:false}}},{name:"departures_attribute",required:true,selector:{attribute:{entity_id:""}},context:{filter_entity:"entity"}},{name:"departure_properties",type:"grid",schema:[{name:"time",selector:{text:{}}},{name:"delay",selector:{text:{}}},{name:"cancelled",selector:{text:{}}},{name:"train",selector:{text:{}}},{name:"direction",selector:{text:{}}},{name:"platform",selector:{text:{}}},{name:"next_stations",selector:{text:{}}}]},{name:"destination_filter",selector:{text:{}}},{name:"displayed_departures",selector:{number:{min:1}}}]}}static getStubConfig(hass,unusedEntities,allEntities){const defaultConfigs={db_infoscreen:{entityTypes:["sensor"],entityAttributes:["next_departures"],getConfig:entity=>({entity:entity.entity_id,station:entity.attributes.station,departures_attribute:"next_departures",departure_properties:{time:"scheduledDeparture",delay:"delayDeparture",cancelled:"isCancelled",train:"train",direction:"destination",platform:"platform",next_stations:"via"}})}};const defaultConfig=super.detectDefaultConfig(defaultConfigs,[...unusedEntities,...allEntities],hass)||{};return{...super.getStubConfig(hass,unusedEntities,allEntities),station:"",layout:Object.keys(this.LAYOUT_PRESETS)[0],departures_attribute:"",departure_properties:{time:"",delay:"",cancelled:"",train:"",direction:"",platform:"",next_stations:""},destination_filter:"",displayed_departures:5,...defaultConfig}}static get styles(){return css`
+        `}}class PublicTransportDepartureCard extends AbstractCard{static FIRST_DEPARTURE_LAYOUT=[["time","train"],["direction","next_stations"],[],["platform"]];static LAYOUT_PRESETS={station_departures:{firstDepartureLayout:this.FIRST_DEPARTURE_LAYOUT,columns:["time","train","next_stations","direction","platform"],layoutOptions:{grid_rows:3,grid_columns:4,grid_min_rows:2,grid_min_columns:3}},platform_departures:{firstDepartureLayout:[["train"],["direction"],[],["offset"]],columns:["train","direction","offset"],layoutOptions:{grid_rows:2,grid_columns:4,grid_min_rows:2,grid_min_columns:2}},fixed_destination:{firstDepartureLayout:this.FIRST_DEPARTURE_LAYOUT,columns:["time","train","next_stations","platform"],layoutOptions:{grid_rows:3,grid_columns:4,grid_min_rows:2,grid_min_columns:2}}};static getConfigForm(){return{schema:[...super.getConfigForm().schema,{name:"layout",required:true,selector:{select:{options:Object.keys(this.LAYOUT_PRESETS),custom_value:false}}},{name:"departures_attribute",required:true,selector:{attribute:{entity_id:""}},context:{filter_entity:"entity"}},{name:"departure_properties",type:"grid",schema:[{name:"time",required:true,selector:{text:{}}},{name:"delay",selector:{text:{}}},{name:"cancelled",selector:{text:{}}},{name:"train",selector:{text:{}}},{name:"direction",required:true,selector:{text:{}}},{name:"platform",selector:{text:{}}},{name:"next_stations",selector:{text:{}}}]},{name:"destination_filter",selector:{text:{}}},{name:"displayed_departures",selector:{number:{min:1}}}]}}static getStubConfig(hass,unusedEntities,allEntities){const defaultConfigs={db_infoscreen:{entityTypes:["sensor"],entityAttributes:["next_departures"],getConfig:entity=>({entity:entity.entity_id,station:entity.attributes.station,departures_attribute:"next_departures",departure_properties:{time:"scheduledDeparture",delay:"delayDeparture",cancelled:"isCancelled",train:"train",direction:"destination",platform:"platform",next_stations:"via"}})}};const defaultConfig=super.detectDefaultConfig(defaultConfigs,[...unusedEntities,...allEntities],hass)||{};return{...super.getStubConfig(hass,unusedEntities,allEntities),layout:Object.keys(this.LAYOUT_PRESETS)[0],departures_attribute:"",departure_properties:{time:"",delay:"",cancelled:"",train:"",direction:"",platform:"",next_stations:""},destination_filter:"",displayed_departures:5,...defaultConfig}}static get styles(){return css`
             ${AbstractCard.styles}
 
             .ptd-main {
@@ -292,31 +292,27 @@ import{LitElement,html,css}from"https://unpkg.com/lit-element@2.0.1/lit-element.
             .ptcd-next-departure .ptcd-platform:last-child {
                 text-align: right;
             }
-        `}render(){const title=this.config.title;const entityId=this.config.entity;const theme=this.config.theme;const stateObj=this.hass.states[entityId];if(!stateObj){return html`
-                <ha-card class="ptd-theme-${theme}">
-                    ${title?html`<h1>${title}</h1>`:""}
-                    <div class="not-found">Entity ${entityId} not found.</div>
-                </ha-card>
-            `}const departures=this._getDepartures();const layoutConfig=this.constructor.LAYOUT_PRESETS[this.config.layout];const nextDepartures=[...departures];const firstDeparture=layoutConfig.firstDepartureLayout?nextDepartures.shift():undefined;return html`
-            <ha-card class="ptc-theme-${theme} ptcd-layout-${this.config.layout}">
-                ${title?html`<h1>${title}</h1>`:""}
-                <div class="ptcd-main" @click="${ev=>this.handleAction("tap")}">
-                    ${layoutConfig.firstDepartureLayout&&firstDeparture?html`
-                        <div class="ptcd-row ptcd-first-departure ${firstDeparture.isCancelled?"ptcd-is-cancelled":""}">
-                            ${layoutConfig.firstDepartureLayout.map((row=>html`
-                                <div class="ptcd-first-departure-section ${row.length===0?"ptcd-spacer":""}">
-                                    ${row.map((column=>this._renderColumn(firstDeparture,column)))}
-                                </div>
-                            `))}
-                        </div>
-                    `:""}
-                    ${nextDepartures.map((departure=>html`
-                        <div class="ptcd-row ptcd-next-departure ${departure.isCancelled?"ptcd-is-cancelled":""}">
-                            ${layoutConfig.columns.map((column=>this._renderColumn(departure,column)))}
-                        </div>
-                    `))}
+        `}renderInnerCard(stateObj){const departures=this._getDepartures();const layoutConfig=this.constructor.LAYOUT_PRESETS[this.config.layout];if(departures.length===0){return html`
+                <div class="no-departures" @click="${ev=>this.handleAction("tap")}">
+                    No departures found.
                 </div>
-            </ha-card>
+            `}const nextDepartures=[...departures];const firstDeparture=layoutConfig.firstDepartureLayout?nextDepartures.shift():undefined;return html`
+            <div class="ptcd-main ptcd-layout-${this.config.layout}" @click="${ev=>this.handleAction("tap")}">
+                ${layoutConfig.firstDepartureLayout&&firstDeparture?html`
+                    <div class="ptcd-row ptcd-first-departure ${firstDeparture.isCancelled?"ptcd-is-cancelled":""}">
+                        ${layoutConfig.firstDepartureLayout.map((row=>html`
+                            <div class="ptcd-first-departure-section ${row.length===0?"ptcd-spacer":""}">
+                                ${row.map((column=>this._renderColumn(firstDeparture,column)))}
+                            </div>
+                        `))}
+                    </div>
+                `:""}
+                ${nextDepartures.map((departure=>html`
+                    <div class="ptcd-row ptcd-next-departure ${departure.isCancelled?"ptcd-is-cancelled":""}">
+                        ${layoutConfig.columns.map((column=>this._renderColumn(departure,column)))}
+                    </div>
+                `))}
+            </div>
         `}modifyConfig(config){const mergedConfig={tap_action:{action:"more-info"},...config};if(!mergedConfig.layout||mergedConfig.layout===""){mergedConfig.layout=Object.keys(this.constructor.LAYOUT_PRESETS)[0]}return super.modifyConfig(mergedConfig)}checkConfig(config){if(!Object.keys(this.constructor.LAYOUT_PRESETS).includes(config.layout)){throw new Error("You must define a valid layout. Available layouts: "+Object.keys(this.constructor.LAYOUT_PRESETS).join(", "))}if(!config.departures_attribute||config.departures_attribute===""){throw new Error("You must define which attribute of the sensor holds the departures as array.")}if(!config.departure_properties){throw new Error("You must define the departure_properties.")}if(!config.departure_properties.time){throw new Error("You must define the time property for the departure entries.")}if(!config.departure_properties.direction){throw new Error("You must define the direction property for the departure entries.")}if(!config.displayed_departures||config.displayed_departures<1){throw new Error("displayed_connections must be set to 1 or higher")}}getCardSize(){return this.constructor.LAYOUT_PRESETS[this.config.layout||""].cardSize||2}getLayoutOptions(){return this.constructor.LAYOUT_PRESETS[this.config.layout||""].layoutOptions||{grid_rows:2,grid_columns:4,grid_min_rows:2,grid_min_columns:2}}_getDepartures(){const stateObj=this.hass.states[this.config.entity];const stateDepartures=stateObj.attributes[this.config.departures_attribute]||[];const departures=[];for(let i=0;i<stateDepartures.length&&departures.length<this.config.displayed_departures;i++){const stateDeparture=stateDepartures[i];const departure={time:timeToStr(stateDeparture[this.config.departure_properties.time]||""),delay:0,isCancelled:false,train:"",direction:stateDeparture[this.config.departure_properties.direction]||"",platform:"",nextStations:[]};if(this.config.departure_properties.delay){departure.delay=delayToMinutes(stateDeparture[this.config.departure_properties.delay]||0)}if(this.config.departure_properties.cancelled){departure.isCancelled=parseBool(stateDeparture[this.config.departure_properties.cancelled]||false)}if(this.config.departure_properties.train){departure.train=stateDeparture[this.config.departure_properties.train]||""}if(this.config.departure_properties.platform){departure.platform=stateDeparture[this.config.departure_properties.platform]||""}if(this.config.departure_properties.next_stations){departure.nextStations=stateDeparture[this.config.departure_properties.next_stations]||[]}if(this.config.destination_filter){const filter=this.config.destination_filter.toUpperCase();if(!departure.direction.toUpperCase().includes(filter)&&!departure.nextStations.join("; ").toUpperCase().includes(filter)){continue}}departures.push(departure)}return departures}_renderColumn(departure,columnType){switch(columnType){case"time":return html`
                     <div class="ptcd-time-departure">
                         ${departure.time}
