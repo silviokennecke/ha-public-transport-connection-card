@@ -1,4 +1,4 @@
-class MultiPublicTransportConnectionCard extends PublicTransprtAbstractConnectionListCard {
+class MultiPublicTransportConnectionCardDev extends PublicTransprtAbstractConnectionListCard {
     static getConfigForm() {
         return {
             schema: [
@@ -38,22 +38,22 @@ class MultiPublicTransportConnectionCard extends PublicTransprtAbstractConnectio
      * @inheritDoc
      */
     static getStubConfig(hass, unusedEntities, allEntities) {
-        // defaults for deutschebahn and hafas
+        // defaults for ha_bahnvorhersage and hafas
         const defaultConfigs = {
-            ha_deutschebahn: {
+            ha_bahnvorhersage: {
                 entityTypes: ['sensor'],
-                entityAttributes: ['departures'],
+                entityAttributes: ['next_departures', 'start_station', 'destination_station'],
                 getConfig: (entity) => ({
                     entity: entity.entity_id,
-                    departure_station: entity.attributes.start,
-                    arrival_station: entity.attributes.goal,
-                    connections_attribute: 'departures',
+                    departure_station: entity.attributes.start_station,
+                    arrival_station: entity.attributes.destination_station,
+                    connections_attribute: 'next_departures',
                     connection_properties: {
-                        description: 'products',
+                        //description: 'products', // TODO
                         departure_time: 'departure',
-                        departure_delay: 'delay',
-                        arrival_time: 'arrival',
-                        arrival_delay: 'delay_arrival',
+                        //departure_delay: 'delay', // TODO
+                        arrival_time: 'plannedArrival',
+                        //arrival_delay: 'delay_arrival', // TODO
                     },
                 }),
             },
@@ -163,11 +163,11 @@ class MultiPublicTransportConnectionCard extends PublicTransprtAbstractConnectio
     }
 }
 
-customElements.define("public-transport-connections-card", MultiPublicTransportConnectionCard);
+customElements.define("public-transport-connections-card-dev", MultiPublicTransportConnectionCardDev);
 window.customCards = window.customCards || [];
 window.customCards.push({
-    type: "public-transport-connections-card",
-    name: "Public Transport Connections",
+    type: "public-transport-connections-card-dev",
+    name: "Public Transport Connections DEV",
     preview: true,
     description: "Display your next connections via public transportation.",
     documentationURL: "https://github.com/silviokennecke/ha-public-transport-connection-card/wiki/Public-Transport-Connection-Card#multiple-connections",

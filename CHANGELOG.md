@@ -10,12 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `public-transport-departures-card`
+- Added auto configuration for [FaserF/ha-bahnvorhersage](https://github.com/FaserF/ha-bahnvorhersage) integration (#25)
 
 ### Changed
 
 - Restructured the repository for better maintainability
 - Extracted the connections card using static attributes for current and next connection into a separate card `public-transport-connections-attributes-card`
 - Extracted the connections card using a connections attribute, containing an array of connections, into a separate card `public-transport-connections-card`
+
+### Removed
+
+- Removed support for [FaserF/ha-deutschebahn](https://github.com/FaserF/ha-deutschebahn) due to deprecation
 
 ## [2.0.1] - 2025-01-15
 
