@@ -1,4 +1,4 @@
-class MultiPublicTransportConnectionCardDev extends PublicTransprtAbstractConnectionListCard {
+class MultiPublicTransportConnectionCard extends PublicTransprtAbstractConnectionListCard {
     static getConfigForm() {
         return {
             schema: [
@@ -49,11 +49,11 @@ class MultiPublicTransportConnectionCardDev extends PublicTransprtAbstractConnec
                     arrival_station: entity.attributes.destination_station,
                     connections_attribute: 'next_departures',
                     connection_properties: {
-                        //description: 'products', // TODO
+                        description: 'line.name',
                         departure_time: 'departure',
-                        //departure_delay: 'delay', // TODO
+                        departure_delay: 'departureDelayPrediction.offset',
                         arrival_time: 'plannedArrival',
-                        //arrival_delay: 'delay_arrival', // TODO
+                        arrival_delay: 'arrivalDelayPrediction.offset',
                     },
                 }),
             },
@@ -118,19 +118,19 @@ class MultiPublicTransportConnectionCardDev extends PublicTransprtAbstractConnec
                 continue;
             }
 
-            const nextDescription = nextConnection[this.config.connection_properties.description] || '';
+            const nextDescription = this.resolveAttributePath(nextConnection, this.config.connection_properties.description) || '';
 
             connections.push({
                 description: Array.isArray(nextDescription) ? nextDescription.join(', ') : nextDescription,
                 departure: {
-                    time: ptcTimeToStr(nextConnection[this.config.connection_properties.departure_time]),
-                    delay: ptcDelayToMinutes(nextConnection[this.config.connection_properties.departure_delay]),
-                    station: nextConnection[this.config.connection_properties.departure_station] || this.config.departure_station || '',
+                    time: ptcTimeToStr(this.resolveAttributePath(nextConnection, this.config.connection_properties.departure_time)),
+                    delay: ptcDelayToMinutes(this.resolveAttributePath(nextConnection, this.config.connection_properties.departure_delay)),
+                    station: this.resolveAttributePath(nextConnection, this.config.connection_properties.departure_station) || this.config.departure_station || '',
                 },
                 arrival: {
-                    time: ptcTimeToStr(nextConnection[this.config.connection_properties.arrival_time]),
-                    delay: ptcDelayToMinutes(nextConnection[this.config.connection_properties.arrival_delay]),
-                    station: nextConnection[this.config.connection_properties.arrival_station] || this.config.arrival_station || '',
+                    time: ptcTimeToStr(this.resolveAttributePath(nextConnection, this.config.connection_properties.arrival_time)),
+                    delay: ptcDelayToMinutes(this.resolveAttributePath(nextConnection, this.config.connection_properties.arrival_delay)),
+                    station: this.resolveAttributePath(nextConnection, this.config.connection_properties.arrival_station) || this.config.arrival_station || '',
                 },
             });
         }
@@ -161,13 +161,50 @@ class MultiPublicTransportConnectionCardDev extends PublicTransprtAbstractConnec
             throw new Error("You must define the arrival_time property for connection entries");
         }
     }
+
+    /**
+     * @param {{[key: string]: any}|any[]} attributes
+     * @param {string} path The path to the target value. Use '.' to separate the path parts. '*' is a wildcard for arrays.
+     * @returns {undefined|any[]|any} Undefined if the path is invalid, an array if the path contains a wildcard, or the value at the path.
+     */
+    resolveAttributePath(attributes, path) {
+        if (path === undefined) {
+            return undefined;
+        }
+
+        let pathParts = path.split('.');
+        let currentPath = pathParts.shift();
+
+        if (attributes === undefined || currentPath === '') {
+            return attributes;
+        }
+
+        if (currentPath === '*') {
+            let result = [];
+
+            if (Array.isArray(attributes)) {
+                attributes.forEach((value) => {
+                    let resolved = this.resolveAttributePath(value, pathParts.join('.'));
+                    if (Array.isArray(resolved)) {
+                        result.push(...resolved);
+                    } else if (resolved !== undefined) {
+                        result.push(resolved);
+                    }
+                });
+            }
+
+            return result;
+        }
+
+        return this.resolveAttributePath(attributes[currentPath], pathParts.join('.'));
+    }
 }
 
-customElements.define("public-transport-connections-card-dev", MultiPublicTransportConnectionCardDev);
+customElements.define("public-transport-connections-card", MultiPublicTransportConnectionCard);
 window.customCards = window.customCards || [];
 window.customCards.push({
-    type: "public-transport-connections-card-dev",
-    name: "Public Transport Connections DEV",
+    type: "public-transport-connections-card",
+    name: "Public Transport Connections",
     preview: true,
     description: "Display your next connections via public transportation.",
     documentationURL: "https://github.com/silviokennecke/ha-public-transport-connection-card/wiki/Public-Transport-Connection-Card#multiple-connections",
