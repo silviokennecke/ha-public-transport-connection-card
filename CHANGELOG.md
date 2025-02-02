@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2025-02-02
+
 ### Added
 
 - Added `public-transport-departures-card`
@@ -67,6 +69,9 @@ The implementation did not change.
 - Added public transport card
 
 [unreleased]: https://github.com/silviokennecke/ha-public-transport-connection-card/compare/1.2.0...HEAD
+[3.0.0]: https://github.com/silviokennecke/ha-public-transport-connection-card/compare/2.0.1...3.0.0
+[2.0.1]: https://github.com/silviokennecke/ha-public-transport-connection-card/compare/2.0.0...2.0.1
+[2.0.0]: https://github.com/silviokennecke/ha-public-transport-connection-card/compare/1.2.0...2.0.0
 [1.2.0]: https://github.com/silviokennecke/ha-public-transport-connection-card/compare/1.1.1...1.2.0
 [1.1.1]: https://github.com/silviokennecke/ha-public-transport-connection-card/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/silviokennecke/ha-public-transport-connection-card/compare/1.0.1...1.1.0
