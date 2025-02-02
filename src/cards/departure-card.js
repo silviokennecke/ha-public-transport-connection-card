@@ -11,7 +11,7 @@
  *        platform?: string,
  *        next_stations?: string,
  *    },
- *    destination_filter?: string,
+ *    destination_filter?: string|string[],
  *    displayed_departures: number,
  * }} DepartureCardConfig
  */
@@ -345,6 +345,19 @@ class PublicTransportDepartureCard extends PublicTransprtAbstractCard {
             mergedConfig.layout = Object.keys(this.constructor.LAYOUT_PRESETS)[0];
         }
 
+        if (mergedConfig.destination_filter) {
+            if (typeof mergedConfig.destination_filter === 'string') {
+                mergedConfig.destination_filter = mergedConfig.destination_filter.split(';');
+            }
+
+            if (Array.isArray(mergedConfig.destination_filter)) {
+                mergedConfig.destination_filter = mergedConfig.destination_filter
+                    .map(filter => filter.trim())
+                    .filter(filter => filter !== '')
+                    .map(filter => filter.toUpperCase());
+            }
+        }
+
         return super.modifyConfig(mergedConfig);
     }
 
@@ -378,6 +391,10 @@ class PublicTransportDepartureCard extends PublicTransprtAbstractCard {
 
         if (!config.displayed_departures || config.displayed_departures < 1) {
             throw new Error("displayed_connections must be set to 1 or higher");
+        }
+
+        if (config.destination_filter && !Array.isArray(config.destination_filter)) {
+            throw new Error("destination_filter must be a string or an array of strings.");
         }
     }
 
@@ -438,13 +455,21 @@ class PublicTransportDepartureCard extends PublicTransprtAbstractCard {
                 departure.nextStations = stateDeparture[this.config.departure_properties.next_stations] || [];
             }
 
-            if (this.config.destination_filter) {
-                const filter = this.config.destination_filter.toUpperCase();
+            if (Array.isArray(this.config.destination_filter) && this.config.destination_filter.length > 0) {
+                /** @type {string[]} Already transformed to uppercase */
+                const filters = this.config.destination_filter;
 
-                if (
-                    !departure.direction.toUpperCase().includes(filter)
-                    && !departure.nextStations.join('; ').toUpperCase().includes(filter)
-                ) {
+                let hasMatch = false;
+                filters.forEach(filter => {
+                    if (
+                        departure.direction.toUpperCase().includes(filter)
+                        || departure.nextStations.join('; ').toUpperCase().includes(filter)
+                    ) {
+                        hasMatch = true;
+                    }
+                });
+
+                if (!hasMatch) {
                     continue;
                 }
             }
