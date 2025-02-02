@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `public-transport-departures-card`
 - Added auto configuration for [FaserF/ha-bahnvorhersage](https://github.com/FaserF/ha-bahnvorhersage) integration (#25)
+- Added support for nested attribute paths in `public-transport-connections-card`
 
 ### Changed
 
