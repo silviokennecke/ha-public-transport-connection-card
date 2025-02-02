@@ -1,13 +1,9 @@
-class SinglePublicTransportConnectionCard extends AbstractConnectionListCard {
+class SinglePublicTransportConnectionCard extends PublicTransprtAbstractConnectionListCard {
     static getConfigForm() {
         return {
             schema: [
-                {
-                    name: "entity",
-                    required: true,
-                    selector: {entity: {domain: "sensor"}},
-                },
-                {name: "title", selector: {text: {}}},
+                ...super.getConfigForm().schema,
+
                 {name: "icon", selector: {icon: {}}},
                 {name: "departure_station", selector: {text: {}}},
                 {name: "arrival_station", selector: {text: {}}},
@@ -136,15 +132,6 @@ class SinglePublicTransportConnectionCard extends AbstractConnectionListCard {
                         },
                     ],
                 },
-                {
-                    name: "theme",
-                    selector: {
-                        select: {
-                            options: AbstractConnectionListCard.AVAILABLE_THEMES,
-                            custom_value: true,
-                        }
-                    }
-                }
             ],
         };
     }
@@ -155,7 +142,7 @@ class SinglePublicTransportConnectionCard extends AbstractConnectionListCard {
      */
     static getStubConfig(hass, unusedEntities, allEntities) {
         return {
-            ...AbstractConnectionListCard.getStubConfig(hass, unusedEntities, allEntities),
+            ...super.getStubConfig(hass, unusedEntities, allEntities),
             attributes: {
                 description: '',
                 departure_time: '',
@@ -178,7 +165,7 @@ class SinglePublicTransportConnectionCard extends AbstractConnectionListCard {
      * @override
      * @inheritDoc
      */
-    getConnections(entityId, stateObj) {
+    getConnections(stateObj) {
         /** @type {Array<ConnectionDetail>} */
         const connections = [];
 
@@ -187,13 +174,13 @@ class SinglePublicTransportConnectionCard extends AbstractConnectionListCard {
         connections.push({
             description: Array.isArray(description) ? description.join(', ') : description,
             departure: {
-                time: timeToStr(stateObj.attributes[this.config.attributes.departure_time]),
-                delay: delayToMinutes(stateObj.attributes[this.config.attributes.departure_delay]),
+                time: ptcTimeToStr(stateObj.attributes[this.config.attributes.departure_time]),
+                delay: ptcDelayToMinutes(stateObj.attributes[this.config.attributes.departure_delay]),
                 station: stateObj.attributes[this.config.attributes.departure_station] || this.config.departure_station || '',
             },
             arrival: {
-                time: timeToStr(stateObj.attributes[this.config.attributes.arrival_time]),
-                delay: delayToMinutes(stateObj.attributes[this.config.attributes.arrival_delay]),
+                time: ptcTimeToStr(stateObj.attributes[this.config.attributes.arrival_time]),
+                delay: ptcDelayToMinutes(stateObj.attributes[this.config.attributes.arrival_delay]),
                 station: stateObj.attributes[this.config.attributes.arrival_station] || this.config.arrival_station || '',
             },
         });
@@ -205,13 +192,13 @@ class SinglePublicTransportConnectionCard extends AbstractConnectionListCard {
                 {
                     description: Array.isArray(nextDescription) ? nextDescription.join(', ') : nextDescription,
                     departure: {
-                        time: timeToStr(stateObj.attributes[this.config.attributes.next_departure_time]),
-                        delay: delayToMinutes(stateObj.attributes[this.config.attributes.next_departure_delay]),
+                        time: ptcTimeToStr(stateObj.attributes[this.config.attributes.next_departure_time]),
+                        delay: ptcDelayToMinutes(stateObj.attributes[this.config.attributes.next_departure_delay]),
                         station: stateObj.attributes[this.config.attributes.next_departure_station] || this.config.departure_station || '',
                     },
                     arrival: {
-                        time: timeToStr(stateObj.attributes[this.config.attributes.next_arrival_time]),
-                        delay: delayToMinutes(stateObj.attributes[this.config.attributes.next_arrival_delay]),
+                        time: ptcTimeToStr(stateObj.attributes[this.config.attributes.next_arrival_time]),
+                        delay: ptcDelayToMinutes(stateObj.attributes[this.config.attributes.next_arrival_delay]),
                         station: stateObj.attributes[this.config.attributes.next_arrival_station] || this.config.arrival_station || '',
                     },
                 }
@@ -226,6 +213,8 @@ class SinglePublicTransportConnectionCard extends AbstractConnectionListCard {
      * @inheritDoc
      */
     checkConfig(config) {
+        super.checkConfig(config);
+
         if (!config.attributes.departure_time) {
             throw new Error("You need to define the departure attribute");
         }

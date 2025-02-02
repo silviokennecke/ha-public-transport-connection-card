@@ -2,9 +2,11 @@
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=silviokennecke&repository=ha-public-transport-connection-card&category=plugin)
 
-This repository contains a custom card for Home Assistant that displays the upcoming connections for a route via public transportion.
+This repository contains custom cards for Home Assistant displaying the upcoming connections or departures via public transportion.
 
-![Screenshot of a configured card](/docs/connection.card.png)
+![Screenshot of card showing connections](/docs/connection-card.png)
+![Screenshot of card showing next departures](/docs/departure-card-with-platform.png)
+![Screenshot of card showing next departures (in minutes)](/docs/departure-card-with-minutes.png)
 
 ## Documentation
 
