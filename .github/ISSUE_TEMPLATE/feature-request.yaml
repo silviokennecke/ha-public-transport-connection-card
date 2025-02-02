@@ -25,7 +25,7 @@ body:
     id: sensor_integration
     attributes:
       label: Public Transport Sensor Integration
-      description: Does your request relate to a specific public transport integration (e.g. ha-deutschebahn, hacs-hafas)?
+      description: Does your request relate to a specific public transport integration (e.g. ha-bahnvorhersage, hacs-hafas)?
     validations:
       required: false
   - type: textarea

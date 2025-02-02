@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.0] - 2025-02-XX
+
+### Added
+- Added auto configuration for [FaserF/ha-bahnvorhersage](https://github.com/FaserF/ha-bahnvorhersage) integration (#25)
+- Added support for nested attribute paths in `public-transport-connections-card`
+
+### Removed
+
+- Removed support for [FaserF/ha-deutschebahn](https://github.com/FaserF/ha-deutschebahn) due to deprecation
+
 ## [3.0.0] - 2025-02-02
 
 ### Added
@@ -68,7 +78,8 @@ The implementation did not change.
 
 - Added public transport card
 
-[unreleased]: https://github.com/silviokennecke/ha-public-transport-connection-card/compare/1.2.0...HEAD
+[unreleased]: https://github.com/silviokennecke/ha-public-transport-connection-card/compare/3.1.0...HEAD
+[3.1.0]: https://github.com/silviokennecke/ha-public-transport-connection-card/compare/3.0.0...3.1.0
 [3.0.0]: https://github.com/silviokennecke/ha-public-transport-connection-card/compare/2.0.1...3.0.0
 [2.0.1]: https://github.com/silviokennecke/ha-public-transport-connection-card/compare/2.0.0...2.0.1
 [2.0.0]: https://github.com/silviokennecke/ha-public-transport-connection-card/compare/1.2.0...2.0.0

@@ -39,7 +39,7 @@ body:
     id: sensor_integration
     attributes:
       label: Public Transport Sensor Integration
-      description: Which Home Assistant integration is used to provide the sensor (e.g. ha-deutschebahn, hacs-hafas)?
+      description: Which Home Assistant integration is used to provide the sensor (e.g. ha-bahnvorhersage, hacs-hafas)?
     validations:
       required: true
   - type: dropdown
